@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: faizuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: webdb
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://faizuser:mypassword@db:5432/webdb
