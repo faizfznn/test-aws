@@ -12,14 +12,23 @@ COPY package.json package-lock.json* ./
 # Menggunakan 'npm ci' lebih stabil untuk environment Docker/CI
 RUN npm install
 
-# 3. Salin seluruh sisa kode (Pastikan sudah ada .dockerignore!)
+#// filepath: /home/faiz/projects/webdev/my-awesome-app/Dockerfile
+# ...existing code...
+# 3. Salin seluruh sisa kode
 COPY . .
+
+# Generate ulang client sebelum build
+RUN npx prisma generate
+
+# Set ENV variable dummy yang valid agar build tidak error saat validasi schema
+# Gunakan SKIP_ENV_VALIDATION jika menggunakan t3-env atau sejenisnya, 
+# tapi untuk prisma polosan, pastikan URL valid secara format.
+ENV DATABASE_URL="postgresql://faizuser:mypassword@localhost:5432/webdb"
+
+# Matikan telemetry untuk speed
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # 4. Build aplikasi Next.js
 RUN npm run build
 
-# Ekspos port 3000
-EXPOSE 3000
-
-# Jalankan aplikasi mode production
-CMD ["npm", "start"]
+# ...existing code...
